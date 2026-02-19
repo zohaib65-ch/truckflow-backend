@@ -1,7 +1,23 @@
 const mongoose = require("mongoose");
 
+const MONGO_ENV_KEYS = ["MONGODB_URI", "MONGODB_URL", "MONGO_URI", "MONGO_URL", "DATABASE_URL", "DATABASE_URI", "DB_URI", "DB_URL"];
+
 const getMongoUri = () => {
-  return process.env.MONGODB_URI || process.env.MONGO_URI || process.env.MONGO_URL || process.env.DATABASE_URL;
+  for (const key of MONGO_ENV_KEYS) {
+    const value = process.env[key];
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value;
+    }
+  }
+
+  return undefined;
+};
+
+const getPresentMongoKeys = () => {
+  return MONGO_ENV_KEYS.filter((key) => {
+    const value = process.env[key];
+    return typeof value === "string" && value.trim().length > 0;
+  });
 };
 
 const connectDB = async () => {
@@ -9,7 +25,10 @@ const connectDB = async () => {
     const mongoUri = getMongoUri();
 
     if (!mongoUri || typeof mongoUri !== "string") {
-      throw new Error("MongoDB connection string is missing. Set one of: MONGODB_URI, MONGO_URI, MONGO_URL, DATABASE_URL.");
+      const presentKeys = getPresentMongoKeys();
+      const presentKeysText = presentKeys.length > 0 ? presentKeys.join(", ") : "none";
+
+      throw new Error(`MongoDB connection string is missing. Set one of: ${MONGO_ENV_KEYS.join(", ")}. Mongo-like keys currently present: ${presentKeysText}.`);
     }
 
     const conn = await mongoose.connect(mongoUri);
