@@ -69,6 +69,7 @@ EMAIL_FROM=TruckFlow <your-email@gmail.com>
 ### 4. MongoDB Setup
 
 **Option A: Local MongoDB**
+
 ```bash
 # Install MongoDB locally
 # macOS: brew install mongodb-community
@@ -80,6 +81,7 @@ mongod
 ```
 
 **Option B: MongoDB Atlas (Cloud)**
+
 1. Create account at [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
 2. Create a cluster
 3. Get connection string
@@ -119,6 +121,7 @@ curl -X POST http://localhost:5000/api/seed
 ```
 
 **Default Manager Credentials:**
+
 - Email: `manager@truckflow.com`
 - Password: `manager123`
 
@@ -164,6 +167,7 @@ truckflow-backend/
 ## 🔌 API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - Login
 - `POST /api/auth/refresh-token` - Refresh access token
@@ -172,6 +176,7 @@ truckflow-backend/
 - `POST /api/auth/reset-password` - Reset password
 
 ### Users
+
 - `GET /api/users/profile` - Get user profile
 - `PUT /api/users/profile` - Update profile
 - `POST /api/users/driver` - Create driver (Manager only)
@@ -179,6 +184,7 @@ truckflow-backend/
 - `DELETE /api/users/driver/:id` - Delete driver (Manager only)
 
 ### Loads
+
 - `GET /api/loads` - Get all loads
 - `POST /api/loads` - Create load (Manager only)
 - `GET /api/loads/:id` - Get load by ID
@@ -190,32 +196,34 @@ truckflow-backend/
 - `POST /api/loads/:id/documents` - Upload documents (Driver only)
 
 ### Notifications
+
 - `GET /api/notifications` - Get user notifications
 - `PATCH /api/notifications/:id/read` - Mark as read
 - `PATCH /api/notifications/read-all` - Mark all as read
 - `DELETE /api/notifications/:id` - Delete notification
 
 ### Dashboard
+
 - `GET /api/dashboard/manager` - Manager dashboard stats
 - `GET /api/dashboard/driver` - Driver dashboard stats
 
 ## 🔐 Environment Variables
 
-| Variable | Description | Required | Default |
-|----------|-------------|----------|---------|
-| `PORT` | Server port | No | 5000 |
-| `MONGODB_URI` | MongoDB connection string | Yes | - |
-| `NODE_ENV` | Environment (development/production) | No | development |
-| `FRONTEND_URL` | Frontend URL for CORS | Yes | - |
-| `JWT_SECRET` | Access token secret | Yes | - |
-| `JWT_EXPIRE` | Access token expiry | No | 15m |
-| `JWT_REFRESH_SECRET` | Refresh token secret | Yes | - |
-| `JWT_REFRESH_EXPIRE` | Refresh token expiry | No | 30d |
-| `EMAIL_HOST` | SMTP host | Yes | - |
-| `EMAIL_PORT` | SMTP port | Yes | - |
-| `EMAIL_USER` | SMTP username | Yes | - |
-| `EMAIL_PASSWORD` | SMTP password | Yes | - |
-| `EMAIL_FROM` | From email address | Yes | - |
+| Variable             | Description                                                                        | Required | Default     |
+| -------------------- | ---------------------------------------------------------------------------------- | -------- | ----------- |
+| `PORT`               | Server port                                                                        | No       | 5000        |
+| `MONGODB_URI`        | MongoDB connection string (also supports `MONGO_URI`, `MONGO_URL`, `DATABASE_URL`) | Yes      | -           |
+| `NODE_ENV`           | Environment (development/production)                                               | No       | development |
+| `FRONTEND_URL`       | Frontend URL for CORS                                                              | Yes      | -           |
+| `JWT_SECRET`         | Access token secret                                                                | Yes      | -           |
+| `JWT_EXPIRE`         | Access token expiry                                                                | No       | 15m         |
+| `JWT_REFRESH_SECRET` | Refresh token secret                                                               | Yes      | -           |
+| `JWT_REFRESH_EXPIRE` | Refresh token expiry                                                               | No       | 30d         |
+| `EMAIL_HOST`         | SMTP host                                                                          | Yes      | -           |
+| `EMAIL_PORT`         | SMTP port                                                                          | Yes      | -           |
+| `EMAIL_USER`         | SMTP username                                                                      | Yes      | -           |
+| `EMAIL_PASSWORD`     | SMTP password                                                                      | Yes      | -           |
+| `EMAIL_FROM`         | From email address                                                                 | Yes      | -           |
 
 ## 🧪 Testing
 
@@ -230,27 +238,35 @@ curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:5000/api/users/profi
 ## 🐛 Troubleshooting
 
 ### MongoDB Connection Error
+
 ```
 Error: connect ECONNREFUSED 127.0.0.1:27017
 ```
+
 **Solution**: Make sure MongoDB is running (`mongod`)
 
 ### Email Not Sending
+
 ```
 Error: Invalid login: 535-5.7.8 Username and Password not accepted
 ```
+
 **Solution**: Use Gmail App Password, not your regular password
 
 ### CORS Error
+
 ```
 Access to fetch at 'http://localhost:5000' has been blocked by CORS policy
 ```
+
 **Solution**: Check `FRONTEND_URL` in `.env` matches your frontend URL
 
 ### WebSocket Connection Failed
+
 ```
 WebSocket connection to 'ws://localhost:5000' failed
 ```
+
 **Solution**: Make sure Socket.IO is properly configured and server is running
 
 ## 📝 Notes
@@ -272,6 +288,7 @@ When updating the database schema:
 ## 📞 Support
 
 For issues or questions:
+
 - Check the troubleshooting section
 - Review API documentation
 - Check server logs for errors
