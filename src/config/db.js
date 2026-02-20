@@ -20,23 +20,39 @@ const getPresentMongoKeys = () => {
   });
 };
 
+let connectionPromise;
+
 const connectDB = async () => {
-  try {
-    const mongoUri = getMongoUri();
-
-    if (!mongoUri || typeof mongoUri !== "string") {
-      const presentKeys = getPresentMongoKeys();
-      const presentKeysText = presentKeys.length > 0 ? presentKeys.join(", ") : "none";
-
-      throw new Error(`MongoDB connection string is missing. Set one of: ${MONGO_ENV_KEYS.join(", ")}. Mongo-like keys currently present: ${presentKeysText}.`);
-    }
-
-    const conn = await mongoose.connect(mongoUri);
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error(`Database connection error: ${error.message}`);
-    process.exit(1);
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
   }
+
+  if (connectionPromise) {
+    return connectionPromise;
+  }
+
+  const mongoUri = getMongoUri();
+
+  if (!mongoUri || typeof mongoUri !== "string") {
+    const presentKeys = getPresentMongoKeys();
+    const presentKeysText = presentKeys.length > 0 ? presentKeys.join(", ") : "none";
+
+    throw new Error(`MongoDB connection string is missing. Set one of: ${MONGO_ENV_KEYS.join(", ")}. Mongo-like keys currently present: ${presentKeysText}.`);
+  }
+
+  connectionPromise = mongoose
+    .connect(mongoUri)
+    .then((conn) => {
+      console.log(`MongoDB Connected: ${conn.connection.host}`);
+      return conn.connection;
+    })
+    .catch((error) => {
+      connectionPromise = undefined;
+      console.error(`Database connection error: ${error.message}`);
+      throw error;
+    });
+
+  return connectionPromise;
 };
 
 module.exports = connectDB;
