@@ -99,10 +99,12 @@ userSchema.methods.getSignedJwtToken = function () {
 
 // Sign Refresh Token
 userSchema.methods.getRefreshJwtToken = function () {
-  const jwtRefreshSecret = getFirstEnv(JWT_REFRESH_SECRET_KEYS);
+  const jwtRefreshSecret = getFirstEnv(JWT_REFRESH_SECRET_KEYS) || getFirstEnv(JWT_SECRET_KEYS);
 
   if (!jwtRefreshSecret) {
-    throw new Error(`Missing required environment variable: one of ${JWT_REFRESH_SECRET_KEYS.join(", ")}`);
+    throw new Error(
+      `Missing required environment variable: one of ${[...JWT_REFRESH_SECRET_KEYS, ...JWT_SECRET_KEYS].join(", ")}`,
+    );
   }
 
   return jwt.sign({ id: this._id }, jwtRefreshSecret, {
