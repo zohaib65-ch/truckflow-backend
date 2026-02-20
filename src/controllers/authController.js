@@ -74,7 +74,7 @@ exports.login = async (req, res) => {
     if (err && typeof err.message === "string" && err.message.includes("Missing required environment variable")) {
       return res.status(500).json({
         success: false,
-        message: "Authentication server is not configured correctly",
+        message: err.message,
       });
     }
 
