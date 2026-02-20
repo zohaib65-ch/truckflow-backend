@@ -2,6 +2,19 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const getFirstEnv = (keys) => {
+  for (const key of keys) {
+    const value = process.env[key];
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value;
+    }
+  }
+  return undefined;
+};
+
+const JWT_SECRET_KEYS = ["JWT_SECRET", "ACCESS_TOKEN_SECRET"];
+const JWT_REFRESH_SECRET_KEYS = ["JWT_REFRESH_SECRET", "JWT_REFRESH_SECRE", "JWT_REFRESH_TOKEN_SECRET", "REFRESH_TOKEN_SECRET"];
+
 const userSchema = mongoose.Schema(
   {
     name: {
@@ -73,22 +86,26 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 
 // Sign Access Token
 userSchema.methods.getSignedJwtToken = function () {
-  if (!process.env.JWT_SECRET) {
-    throw new Error("Missing required environment variable: JWT_SECRET");
+  const jwtSecret = getFirstEnv(JWT_SECRET_KEYS);
+
+  if (!jwtSecret) {
+    throw new Error(`Missing required environment variable: one of ${JWT_SECRET_KEYS.join(", ")}`);
   }
 
-  return jwt.sign({ id: this._id, role: this.role }, process.env.JWT_SECRET, {
+  return jwt.sign({ id: this._id, role: this.role }, jwtSecret, {
     expiresIn: process.env.JWT_EXPIRE || "15m",
   });
 };
 
 // Sign Refresh Token
 userSchema.methods.getRefreshJwtToken = function () {
-  if (!process.env.JWT_REFRESH_SECRET) {
-    throw new Error("Missing required environment variable: JWT_REFRESH_SECRET");
+  const jwtRefreshSecret = getFirstEnv(JWT_REFRESH_SECRET_KEYS);
+
+  if (!jwtRefreshSecret) {
+    throw new Error(`Missing required environment variable: one of ${JWT_REFRESH_SECRET_KEYS.join(", ")}`);
   }
 
-  return jwt.sign({ id: this._id }, process.env.JWT_REFRESH_SECRET, {
+  return jwt.sign({ id: this._id }, jwtRefreshSecret, {
     expiresIn: process.env.JWT_REFRESH_EXPIRE || "30d",
   });
 };
